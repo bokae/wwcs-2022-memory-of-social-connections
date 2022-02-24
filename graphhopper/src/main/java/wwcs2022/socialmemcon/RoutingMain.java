@@ -3,6 +3,7 @@ package wwcs2022.socialmemcon;
 import com.graphhopper.GHRequest;
 import com.graphhopper.GHResponse;
 import com.graphhopper.GraphHopper;
+import com.graphhopper.Trip;
 import com.graphhopper.config.CHProfile;
 import com.graphhopper.config.Profile;
 import org.codehaus.commons.compiler.util.Producer;
@@ -15,45 +16,6 @@ import java.util.*;
 public class RoutingMain {
 
     private static final Logger log = LoggerFactory.getLogger(RoutingMain.class);
-
-    public static Map<Integer, Map<String, Map<String,Double>>> computeDistances(
-            List<LocationEntry> locations, Map<Integer,Producer<GraphHopper>> hoppers, String vehicle, Weighting w) {
-        Map<Integer, Map<String, Map<String,Double>>> result = new TreeMap<>();
-        for (var entry : hoppers.entrySet()) {
-            result.put(entry.getKey(), computeDistances(locations, entry.getValue(), vehicle, w));
-        }
-        return result;
-    }
-
-    public static Map<String, Map<String,Double>> computeDistances(
-            List<LocationEntry> locations, Producer<GraphHopper> prod, String vehicle, Weighting w) {
-        GraphHopper hopper = prod.produce();
-        var result = computeDistances(locations, hopper, vehicle, w);
-        hopper.close();
-        return result;
-    }
-
-    public static Map<String, Map<String,Double>> computeDistances(
-            List<LocationEntry> locations, GraphHopper hopper, String vehicle, Weighting w) {
-        Map<String,Map<String,Double>> result = new TreeMap<>();
-        for (LocationEntry from : locations) {
-            Map<String,Double> innerMap = new TreeMap<>();
-            for (LocationEntry to : locations) {
-                if (from != to) {
-                    String profile = w.getProfileForVehicle(vehicle);
-                    GHRequest req = new GHRequest(from.toPoint(), to.toPoint()).setProfile(profile);
-                    GHResponse resp = hopper.route(req);
-                    if (resp.hasErrors()) {
-                        log.error("Errors in route computation: {}", resp.getErrors());
-                    }
-                    innerMap.put(to.getName(), resp.getBest().getDistance());
-                }
-            }
-            result.put(from.getName(), innerMap);
-        }
-        return result;
-    }
-
 
     public static Map<Integer, Producer<GraphHopper>> createInstances(Map<Integer, File> files, String cacheDirPrefix,
                                                                       String vehicle) {

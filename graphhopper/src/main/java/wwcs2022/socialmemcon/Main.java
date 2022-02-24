@@ -1,7 +1,12 @@
 package wwcs2022.socialmemcon;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
+import wwcs2022.socialmemcon.config.Config;
+import wwcs2022.socialmemcon.config.LocationEntry;
+import wwcs2022.socialmemcon.config.RestrictionEntry;
 
 import java.io.File;
 import java.io.IOException;
@@ -11,7 +16,6 @@ public class Main {
 
     private static final String PBF_LOCATION = "https://download.geofabrik.de/europe/hungary-latest.osm.pbf";
     private static final String DATA_FILE = "data/hungary-latest.osm.pbf";
-    //private static final String DATA_FILE = "data/test.osm.pbf";
     private static final String GH_CACHE_DIR = "cache";
     private static final String COORDINATES_FILE = "coordinates.txt";
     private static final String RESTRICTIONS_FILE = "restrictions.txt";
@@ -22,6 +26,45 @@ public class Main {
     private static final Logger log = LoggerFactory.getLogger(Main.class);
 
     public static void main(String [] args) throws IOException {
+        File cfgFile = new File("config.yaml");
+        log.info("Reading config file {}", cfgFile);
+        ObjectMapper om = new ObjectMapper(new YAMLFactory());
+        Config cfg = om.readValue(cfgFile, Config.class);
+        log.info("File read. Starting processing pipeline.");
+        executeConfig(cfg);
+    }
+
+    public static void executeConfig(Config cfg) throws IOException {
+
+        String dataFile = cfg.getDataFile();
+        String cacheDir = cfg.getCacheFolder();
+        String vehicle = cfg.getVehicle();
+        List<LocationEntry> locations = cfg.getLocations();
+        if (!Downloader.downloadFile(cfg.getOsmUrl(), dataFile)) {
+            log.info("Unable to obtain data file. Exiting");
+            return;
+        }
+        log.info("Processing datasets");
+        var datasets = FilterOSMMain.processAll(cfg.getRestrictions(), dataFile,
+                cfg.getDataFolder()+File.separator+"network-", ".osm.pbf");
+        log.info("Datasets: {}", datasets);
+        log.info("Setting up routing engines");
+        var hoppers = RoutingMain.createInstances(datasets, cacheDir, vehicle);
+        log.info("Hoppers: {}", hoppers);
+        var baseHopper = RoutingMain.createGraphHopperInstance(dataFile,
+                cacheDir+File.separator+"now", vehicle);
+        log.info("Computing distances");
+        RouteProcessor proc = new RouteProcessor();
+        var baseDistances = proc.computeDistances(locations, baseHopper, vehicle, RoutingMain.Weighting.SHORTEST);
+        var distances = proc.computeDistances(locations, hoppers, vehicle, RoutingMain.Weighting.SHORTEST);
+        log.info("Routes processed.");
+        proc.printStats();
+        log.info("Writing spreadsheets");
+        SpreadsheetWriter.writeBigSpreadsheet(baseDistances, distances, new File(cfg.getOutputPrefix()+"-all.xlsx"));
+        log.info("Finished processing");
+    }
+
+    public static void mainOld(String [] args) throws IOException {
 
         File coorFile = new File(COORDINATES_FILE);
         File resFile = new File(RESTRICTIONS_FILE);
@@ -50,24 +93,17 @@ public class Main {
         }
         log.info("{} restriction entries read from input file", restrictions.size());
 
+        Config cfg = new Config(PBF_LOCATION,
+                                new File(DATA_FILE).getParent(),
+                                GH_CACHE_DIR,
+                                locations,
+                                restrictions,
+                                OUTPUT_PREFIX,
+                                VEHICLE,
+                                PROFILE
+                );
 
-        if (!Downloader.downloadFile(PBF_LOCATION, DATA_FILE)) {
-            log.info("Unable to obtain data file. Exiting");
-            return;
-        }
-        log.info("Processing datasets");
-        var datasets = FilterBridgesMain.processAll(restrictions, DATA_FILE, "data/network-", ".osm.pbf");
-        log.info("Datasets: {}", datasets);
-        log.info("Setting up routing engines");
-        var hoppers = RoutingMain.createInstances(datasets, GH_CACHE_DIR, VEHICLE);
-        log.info("Hoppers: {}", hoppers);
-        var baseHopper = RoutingMain.createGraphHopperInstance(DATA_FILE, GH_CACHE_DIR+"/now", VEHICLE);
-        log.info("Computing distances");
-        var baseDistances = RoutingMain.computeDistances(locations, baseHopper, VEHICLE, RoutingMain.Weighting.SHORTEST);
-        var distances = RoutingMain.computeDistances(locations, hoppers, VEHICLE, RoutingMain.Weighting.SHORTEST);
-        log.info("Writing spreadsheets");
-        SpreadsheetWriter.writeBigSpreadsheet(baseDistances, distances, new File(OUTPUT_PREFIX+"-all.xlsx"));
-        log.info("Finished processing");
+        executeConfig(cfg);
     }
 
 }

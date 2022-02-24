@@ -1,6 +1,5 @@
 package wwcs2022.socialmemcon;
 
-import com.graphhopper.util.CustomModel;
 import de.topobyte.osm4j.core.access.OsmIterator;
 import de.topobyte.osm4j.core.model.iface.*;
 import de.topobyte.osm4j.pbf.seq.PbfIterator;
@@ -10,14 +9,15 @@ import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import wwcs2022.socialmemcon.config.RestrictionEntry;
 
 import java.io.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class FilterBridgesMain {
+public class FilterOSMMain {
 
-    private static final Logger log = LoggerFactory.getLogger(FilterBridgesMain.class);
+    private static final Logger log = LoggerFactory.getLogger(FilterOSMMain.class);
 
     private static final String RESTRICTIONS_FILE = "restrictions.txt";
 
