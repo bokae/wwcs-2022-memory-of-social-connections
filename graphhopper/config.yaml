@@ -1,0 +1,110 @@
+---
+osmUrl: "https://download.geofabrik.de/europe/hungary-latest.osm.pbf"
+dataFolder: "data"
+cacheFolder: "cache"
+outputPrefix: "output_"
+vehicle: "car"
+profile: "car"
+locations:
+  - name: "Pécs"
+    location: [46.07125,18.23311]
+  - name: "Kecskemét"
+    location: [46.90745,19.69175]
+  - name: "Békéscsaba"
+    location: [46.679,21.091]
+  - name: "Miskolc"
+    location: [48.104167,20.791667]
+  - name: "Budapest"
+    location: [47.4925,19.051389]
+  - name: "Szeged"
+    location: [46.255,20.145]
+  - name: "Székesfehérvár"
+    location: [47.18877,18.41384]
+  - name: "Gyor"
+    location: [47.6842,17.6344]
+  - name: "Debrecen"
+    location: [47.52997,21.63916]
+  - name: "Eger"
+    location: [47.89902,20.3747]
+  - name: "Szolnok"
+    location: [47.17467,20.19649]
+  - name: "Tatabánya"
+    location: [47.58616,18.39485]
+  - name: "Salgótarján"
+    location: [48.104042,19.807456]
+  - name: "Kaposvár"
+    location: [46.36383,17.78225]
+  - name: "Nyíregyháza"
+    location: [47.95306,21.72713]
+  - name: "Szekszárd"
+    location: [46.35597,18.70382]
+  - name: "Szombathely"
+    location: [47.23512,16.62191]
+  - name: "Veszprém"
+    location: [47.09296,17.91377]
+  - name: "Zalaegerszeg"
+    location: [46.839167,16.851111]
+restrictions:
+- name: "József Beszédes Bridge"
+  year: 2001
+  speedLimit: 0.0
+  polygon:
+    - [46.8176,18.9209]
+    - [46.817,18.9442]
+    - [46.8031,18.9449]
+    - [46.8044,18.9204]
+    - [46.8176,18.9209]
+- name: "Szent László bridge"
+  year: 2003
+  speedLimit: 0.0
+  polygon:
+    - [46.3624,18.8718]
+    - [46.362,18.9133]
+    - [46.3442,18.9137]
+    - [46.3457,18.8785]
+    - [46.3624,18.8718]
+- name: "Pentele Bridge"
+  year: 2007
+  speedLimit: 0.0
+  polygon:
+    - [46.9072,18.9482]
+    - [46.9025,18.9641]
+    - [46.9007,18.9624]
+    - [46.9043,18.9521]
+    - [46.9072,18.9482]
+- name: "Megyeri Bridge"
+  year: 2008
+  speedLimit: 0.0
+  polygon:
+    - [47.6189,19.0657]
+    - [47.6147,19.1105]
+    - [47.5963,19.1044]
+    - [47.6022,19.062]
+    - [47.6189,19.0657]
+- name: "Liberty Bridge"
+  year: 2009
+  speedLimit: 0.0
+  polygon:
+    - [47.4884,19.0499]
+    - [47.4882,19.0608]
+    - [47.4827,19.0594]
+    - [47.4835,19.0502]
+    - [47.4884,19.0499]
+- name: "Margaret Bridge"
+  year: 2011
+  speedLimit: 0.0
+  polygon:
+    - [47.5201,19.0322]
+    - [47.5181,19.0538]
+    - [47.5077,19.0509]
+    - [47.5088,19.0333]
+    - [47.5201,19.0322]
+- name: "Deák Ferenc Bridge"
+  year: 2012
+  speedLimit: 0.0
+  polygon:
+    - [47.3985,18.9981]
+    - [47.3997,19.0279]
+    - [47.3785,19.0263]
+    - [47.3812,19.0011]
+    - [47.3985,18.9981]
